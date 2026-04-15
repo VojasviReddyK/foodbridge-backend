@@ -27,6 +27,8 @@ exports.browse = async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(60)
     .populate('donor', 'name city')
+    donation.status = "assigned"
+donation.assignedVolunteer = null
 
   return res.json({ donations })
 }
@@ -146,5 +148,3 @@ exports.rateVolunteer = async (req, res) => {
   return res.status(201).json({ rating })
 }
 
-donation.status = "assigned"
-donation.assignedVolunteer = null
