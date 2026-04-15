@@ -12,6 +12,7 @@ router.post('/verify-donor-otp', volunteerController.verifyDonorOtp)
 router.post('/verify-acceptor-otp', volunteerController.verifyAcceptorOtp)
 router.get('/dashboard-stats', volunteerController.dashboardStats)
 router.post('/rate/:donorId', volunteerController.rateDonor)
+router.post("/accept", acceptDonation)
 
 module.exports = router
 

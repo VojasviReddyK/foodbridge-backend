@@ -100,7 +100,10 @@ exports.rateDonor = async (req, res) => {
     donor: donorId,
     status: 'delivered',
   })
-  if (!donation) return res.status(400).json({ message: 'Invalid donation' })
+
+  if (!donation) {
+    return res.status(400).json({ message: 'Invalid donation' })
+  }
 
   const rating = await Rating.create({
     rater: req.user._id,
@@ -114,14 +117,35 @@ exports.rateDonor = async (req, res) => {
     { $match: { ratee: rating.ratee } },
     { $group: { _id: '$ratee', avg: { $avg: '$score' }, count: { $sum: 1 } } },
   ])
+
   const next = agg[0]
+
   await User.updateOne(
     { _id: donorId },
-    { rating: next?.avg || 0, totalRatings: next?.count || 0 },
+    { rating: next?.avg || 0, totalRatings: next?.count || 0 }
   )
 
   return res.status(201).json({ rating })
 }
 
-donation.assignedVolunteer = req.user._id
-donation.status = "assigned_to_volunteer"
+exports.acceptDonation = async (req, res) => {
+  const { donationId } = req.body
+
+  const donation = await Donation.findById(donationId)
+
+  if (!donation) {
+    return res.status(404).json({ message: "Donation not found" })
+  }
+
+  if (donation.assignedVolunteer) {
+    return res.status(400).json({ message: "Already assigned" })
+  }
+
+  donation.assignedVolunteer = req.user._id
+  donation.status = "assigned"
+
+  await donation.save()
+
+  return res.json({ donation })
+}
+
