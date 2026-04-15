@@ -146,3 +146,5 @@ exports.rateVolunteer = async (req, res) => {
   return res.status(201).json({ rating })
 }
 
+donation.status = "assigned"
+donation.assignedVolunteer = null
